@@ -1,0 +1,190 @@
+<?php 
+session_start();
+include('functions/userfunctions.php');
+include('includes/header.php');
+?>
+
+<style>
+    body { background-color: #eaeded; }
+    
+    /* Layout Container */
+    .amazon-main-container { 
+        display: flex; 
+        width: 100%; 
+        padding: 20px; 
+        gap: 20px; 
+    }
+
+    /* Left Side: Product List */
+    .cart-items-box { 
+        flex: 1; 
+        background: #fff; 
+        padding: 20px; 
+        border-radius: 4px;
+        border: 1px solid #ddd;
+    }
+    
+    /* Right Side: The Order Summary Box */
+    .right-summary-sidebar { 
+        width: 300px; 
+        background: #fff; 
+        padding: 20px; 
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        position: sticky; 
+        top: 10px;
+        height: fit-content;
+    }
+
+    .buy-btn-amazon {
+        background: #FFD814;
+        border: 1px solid #FCD200;
+        border-radius: 20px;
+        padding: 10px;
+        width: 100%;
+        font-weight: 500;
+        color: #0f1111;
+        text-align: center;
+        display: block;
+        text-decoration: none;
+    }
+
+    /* Bottom Section: 8 Products in a Row */
+    .recommendations-wrapper { 
+        background: #fff; 
+        margin: 20px; 
+        padding: 20px; 
+        border: 1px solid #ddd; 
+    }
+    
+    .grid-row-8 {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr); /* FORCES 8 PRODUCTS IN ONE LINE */
+        gap: 15px;
+        overflow-x: auto;
+    }
+
+    .product-grid-item {
+        border: 1px solid #f0f0f0;
+        padding: 10px;
+        text-align: left;
+        font-size: 13px;
+        border-radius: 4px;
+    }
+
+    .product-grid-item img { 
+        width: 100%; 
+        height: 120px; 
+        object-fit: contain; 
+        margin-bottom: 10px;
+    }
+
+    .item-line { display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee; }
+    .price-amazon { color: #B12704; font-weight: bold; font-size: 1.1rem; margin-left: auto; }
+</style>
+
+<div class="amazon-main-container">
+    <form action="checkout.php" method="POST" style="display: contents;">
+        <div class="cart-items-box">
+            <h3 class="fw-normal mb-3 border-bottom pb-2">Shopping Cart</h3>
+            <?php 
+            $items = getCartItems(); 
+            if(mysqli_num_rows($items) > 0) {
+                foreach ($items as $citem) {
+                    ?>
+                    <div class="item-line product_data">
+                        <input type="checkbox" name="selected_cart_ids[]" class="product-checkbox me-3" 
+                               value="<?= $citem['cid']; ?>" 
+                               data-price="<?= $citem['selling_price']; ?>" 
+                               data-qty="<?= $citem['prod_qty']; ?>">
+                        
+                        <img src="admin/uploads/<?= $citem['image']; ?>" style="width: 100px; height: 100px; object-fit: contain;">
+                        
+                        <div class="ms-3">
+                            <h6 class="fw-bold mb-1"><?= $citem['name']; ?></h6>
+                            <p class="text-success small mb-1">In Stock</p>
+                            <p class="text-muted small mb-1">Qty: <?= $citem['prod_qty']; ?></p>
+                            <button type="button" class="btn btn-link btn-sm p-0 text-danger deleteItemBtn" value="<?= $citem['cid']; ?>">Delete</button>
+                        </div>
+
+                        <div class="price-amazon">
+                            Rs <?= number_format($citem['selling_price']); ?>
+                        </div>
+                    </div>
+                    <?php
+                }
+            } else {
+                echo "<h4>Your cart is empty</h4>";
+            }
+            ?>
+        </div>
+
+        <div class="right-summary-sidebar">
+            <div class="text-success small mb-2">
+                <i class="fa fa-check-circle"></i> Your order is eligible for FREE Delivery.
+            </div>
+            
+            <h5 class="fw-normal">Subtotal (<span id="item-count">0</span> items):</h5>
+            <h4 class="fw-bold">Rs <span id="item-total">0</span></h4>
+
+            <div class="form-check my-3">
+                <input class="form-check-input" type="checkbox" id="gift">
+                <label class="form-check-label small" for="gift">This order contains a gift</label>
+            </div>
+
+            <button type="submit" id="checkout-btn" class="buy-btn-amazon border-0">
+                Proceed to Buy
+            </button>
+            
+            <div class="mt-4 pt-2 border-top">
+                <select class="form-select form-select-sm border-0 bg-light">
+                    <option>EMI Options Available</option>
+                </select>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="recommendations-wrapper">
+    <h5 class="mb-4">Your recently viewed items and featured recommendations</h5>
+    <div class="grid-row-8">
+        <?php 
+        // Example loop for 8 items
+        for($i=1; $i<=8; $i++): ?>
+        <div class="product-grid-item">
+            <img src="admin/uploads/sample_phone.jpg" alt="Item">
+            <p class="text-primary mb-1" style="height: 40px; overflow: hidden;">Samsung Galaxy S26 Ultra 5G...</p>
+            <div class="text-warning small mb-1">
+                <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star-half"></i> <span class="text-muted">138</span>
+            </div>
+            <p class="text-danger fw-bold mb-1">Rs 1,30,999</p>
+            <p class="text-muted small">Get it by <b>Wednesday</b></p>
+            <button class="btn btn-sm btn-warning rounded-pill w-100 mt-2">Add to Cart</button>
+        </div>
+        <?php endfor; ?>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('.product-checkbox');
+    const totalDisplay = document.getElementById('item-total');
+    const countDisplay = document.getElementById('item-count');
+
+    function updateCart() {
+        let total = 0, count = 0;
+        checkboxes.forEach(cb => {
+            if (cb.checked) {
+                total += parseFloat(cb.getAttribute('data-price')) * parseInt(cb.getAttribute('data-qty'));
+                count++;
+            }
+        });
+        totalDisplay.innerText = total.toLocaleString('en-IN');
+        countDisplay.innerText = count;
+    }
+
+    checkboxes.forEach(cb => cb.addEventListener('change', updateCart));
+});
+</script>
+
+<?php include('includes/footer.php'); ?>

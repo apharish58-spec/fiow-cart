@@ -1,0 +1,642 @@
+<?php 
+session_start();
+include('functions/userfunctions.php'); 
+include('includes/header.php');
+include('includes/slider.php');
+?>
+
+<!-- Main Wrapper with Gray Background -->
+<div style="background-color: #EAEDED; width: 100%; padding: 20px 0;">
+    <div class="container-fluid px-4">
+        
+        <!-- Session Messages -->
+        <?php if(isset($_SESSION['message'])) { ?>
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>Hey!</strong> <?= $_SESSION['message']; ?>.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php unset($_SESSION['message']); } ?>
+
+        <!-- The 4-Column Row -->
+        <div class="row g-3">
+            
+            <!-- Box 1: Continue shopping deals -->
+            <div class="row g-3">
+    <?php
+    // We only fetch status '0' so that the "OFF" cards disappear and others slide over
+    $cards = mysqli_query($con, "SELECT * FROM category_cards WHERE status='0' ORDER BY id DESC");
+    
+    if(mysqli_num_rows($cards) > 0) {
+        while($row = mysqli_fetch_array($cards)) {
+            ?>
+            <div class="col-md-3">
+                <!-- Main container with the 420px height you requested -->
+                <div class="bg-white p-3 shadow-sm d-flex flex-column" style="min-height: 420px; border-radius: 4px;">
+                    
+                    <!-- Dynamic Title from Database -->
+                    <h5 class="fw-bold mb-3" style="font-size: 21px;"><?= $row['card_title']; ?></h5>
+                    
+                    <div class="row g-2 flex-grow-1 text-center">
+                        <?php 
+                        // Loop through the 4 product slots in the database
+                        for($i=1; $i<=4; $i++): 
+                            $p_name = $row['p'.$i.'_name'];
+                            $p_image = $row['p'.$i.'_image'];
+                        ?>
+                        <div class="col-6 mb-3">
+                            <!-- Image container with 100px height for uniform box sizes -->
+                            <div class="bg-light d-flex align-items-center justify-content-center" style="height:110px; overflow: hidden;">
+                                <img src="uploads/<?= $p_image; ?>" class="img-fluid" style="max-height: 90%; object-fit: contain;" alt="<?= $p_name; ?>">
+                            </div>
+                            <!-- Product Name -->
+                            <span class="small d-block mt-1 text-start text-truncate" style="font-size: 13px;">
+                                <?= $p_name; ?>
+                            </span>
+                        </div>
+                        <?php endfor; ?>
+                    </div>
+
+                    <!-- Bottom link stays at the very bottom -->
+                    <div class="mt-auto pt-2">
+                        <a href="#" class="text-decoration-none small text-primary fw-bold">See all offers</a>
+                    </div>
+                </div>
+            </div>
+            <?php
+        }
+    } else {
+        echo '<div class="col-12 text-center"><p>No categories currently active.</p></div>';
+    }
+    ?>
+    <!-- Box 4: Sign In & Ad -->
+            <div class="col-md-3">
+                <!-- Sign In -->
+                <div class="bg-white p-3 mb-3 shadow-sm">
+                    <h5 class="fw-bold" style="font-size: 18px;">Sign in for your best experience</h5>
+                    <a href="login.php" class="btn w-100 mt-2 fw-bold" style="background-color: #FFD814; border: 1px solid #FCD200; border-radius: 8px;">Sign in securely</a>
+                </div>
+
+                <!-- Sponsored Ad -->
+                <div class="bg-white p-3 shadow-sm text-center d-flex flex-column" style="min-height: 275px;">
+                    <div class="text-start">
+                        <h6 class="fw-bold m-0">iPhone 17</h6>
+                        <p class="text-muted small">Magichromatic.</p>
+                    </div>
+                    <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                        <img src="uploads/iphone17_ad.jpg" class="img-fluid" style="max-height: 140px;">
+                    </div>
+                    <div class="text-start mt-2">
+                        <span class="small text-muted">Exciting offers*</span>
+                    </div>
+                    <div class="text-end">
+                        <span class="text-muted" style="font-size: 10px;">Sponsored</span>
+                    </div>
+                </div>
+            </div>
+</div>
+
+            <!-- Box 2: Appliances -->
+            <div class="col-md-3">
+                <div class="bg-white p-3 shadow-sm d-flex flex-column" style="min-height: 420px;">
+                    <h5 class="fw-bold mb-3" style="font-size: 21px;">Appliances | Up to 55% off</h5>
+                    <div class="row g-2 flex-grow-1 text-center">
+                        <div class="col-6"><div class="bg-light d-flex align-items-center justify-content-center" style="height:100px;"><img src="uploads/ac.jpg" class="img-fluid" style="max-height:90%;"></div><span class="small d-block mt-1 text-start">Air conditioners</span></div>
+                        <div class="col-6"><div class="bg-light d-flex align-items-center justify-content-center" style="height:100px;"><img src="uploads/fridge.jpg" class="img-fluid" style="max-height:90%;"></div><span class="small d-block mt-1 text-start">Refrigerators</span></div>
+                        <div class="col-6"><div class="bg-light d-flex align-items-center justify-content-center" style="height:100px;"><img src="uploads/micro.jpg" class="img-fluid" style="max-height:90%;"></div><span class="small d-block mt-1 text-start">Microwaves</span></div>
+                        <div class="col-6"><div class="bg-light d-flex align-items-center justify-content-center" style="height:100px;"><img src="uploads/wash.jpg" class="img-fluid" style="max-height:90%;"></div><span class="small d-block mt-1 text-start">Washing machines</span></div>
+                    </div>
+                    <div class="mt-auto"><a href="#" class="text-decoration-none small text-primary">See more</a></div>
+                </div>
+            </div>
+
+            <!-- Box 3: Home Essentials -->
+            <div class="col-md-3">
+                <div class="bg-white p-3 shadow-sm d-flex flex-column" style="min-height: 420px;">
+                    <h5 class="fw-bold mb-3" style="font-size: 21px;">Starting ₹49 | Essentials</h5>
+                    <div class="row g-2 flex-grow-1">
+                        <div class="col-6"><div class="bg-light d-flex align-items-center justify-content-center" style="height:100px;"><img src="uploads/clean.jpg" class="img-fluid" style="max-height:90%;"></div><span class="small d-block mt-1">Cleaning</span></div>
+                        <div class="col-6"><div class="bg-light d-flex align-items-center justify-content-center" style="height:100px;"><img src="uploads/bath.jpg" class="img-fluid" style="max-height:90%;"></div><span class="small d-block mt-1">Bathroom</span></div>
+                        <div class="col-6"><div class="bg-light d-flex align-items-center justify-content-center" style="height:100px;"><img src="uploads/tools.jpg" class="img-fluid" style="max-height:90%;"></div><span class="small d-block mt-1">Tools</span></div>
+                        <div class="col-6"><div class="bg-light d-flex align-items-center justify-content-center" style="height:100px;"><img src="uploads/wall.jpg" class="img-fluid" style="max-height:90%;"></div><span class="small d-block mt-1">Wallpapers</span></div>
+                    </div>
+                    <div class="mt-auto"><a href="#" class="text-decoration-none small text-primary">Explore all</a></div>
+                </div>
+            </div>
+
+            <!-- Box 4: Sign In & Ad -->
+            <div class="col-md-3">
+                <!-- Sign In -->
+                <div class="bg-white p-3 mb-3 shadow-sm">
+                    <h5 class="fw-bold" style="font-size: 18px;">Sign in for your best experience</h5>
+                    <a href="login.php" class="btn w-100 mt-2 fw-bold" style="background-color: #FFD814; border: 1px solid #FCD200; border-radius: 8px;">Sign in securely</a>
+                </div>
+
+                <!-- Sponsored Ad -->
+                <div class="bg-white p-3 shadow-sm text-center d-flex flex-column" style="min-height: 275px;">
+                    <div class="text-start">
+                        <h6 class="fw-bold m-0">iPhone 17</h6>
+                        <p class="text-muted small">Magichromatic.</p>
+                    </div>
+                    <div class="flex-grow-1 d-flex align-items-center justify-content-center">
+                        <img src="uploads/iphone17_ad.jpg" class="img-fluid" style="max-height: 140px;">
+                    </div>
+                    <div class="text-start mt-2">
+                        <span class="small text-muted">Exciting offers*</span>
+                    </div>
+                    <div class="text-end">
+                        <span class="text-muted" style="font-size: 10px;">Sponsored</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Box 5: Continue shopping deals -->
+            <div class="col-md-3">
+                <div class="bg-white p-3 shadow-sm d-flex flex-column" style="min-height: 420px;">
+                    <h5 class="fw-bold mb-3" style="font-size: 21px;">Continue shopping deals</h5>
+                    <div class="row g-2 flex-grow-1">
+                        <div class="col-6"><div class="bg-light d-flex align-items-center justify-content-center" style="height:110px;"><img src="uploads/p1.jpg" class="img-fluid" style="max-height:90%;"></div><span class="small d-block mt-1">Phone cases</span></div>
+                        <div class="col-6"><div class="bg-light d-flex align-items-center justify-content-center" style="height:110px;"><img src="uploads/p2.jpg" class="img-fluid" style="max-height:90%;"></div><span class="small d-block mt-1">Protectors</span></div>
+                        <div class="col-6"><div class="bg-light d-flex align-items-center justify-content-center" style="height:110px;"><img src="uploads/p3.jpg" class="img-fluid" style="max-height:90%;"></div><span class="small d-block mt-1">Cables</span></div>
+                        <div class="col-6"><div class="bg-light d-flex align-items-center justify-content-center" style="height:110px;"><img src="uploads/p4.jpg" class="img-fluid" style="max-height:90%;"></div><span class="small d-block mt-1">Chargers</span></div>
+                    </div>
+                    <div class="mt-auto"><a href="#" class="text-decoration-none small text-primary">See more deals</a></div>
+                </div>
+            </div>
+
+
+ <!--full slider 1: Continue shopping deals -->           
+<div class="container-fluid py-4" style="background-color: #fff; margin-top: 20px;">
+    <div class="d-flex justify-content-between align-items-center mb-3 px-2">
+        <h4 class="fw-bold m-0" style="font-size: 20px;">More items to consider</h4>
+        <a href="#" class="text-decoration-none small" style="color: #007185;">See more</a>
+    </div>
+
+    <!-- Horizontal Scroll Container -->
+    <div class="d-flex overflow-auto pb-3 custom-scrollbar" style="gap: 20px; white-space: nowrap;">
+        
+        <!-- Product 1 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/router1.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">GL.iNet GL-MT3000 VPN Router</p>
+        </div>
+
+        <!-- Product 2 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/router2.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Dual Band Gigabit Wireless</p>
+        </div>
+
+        <!-- Product 3 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/device3.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Security Gateway Device</p>
+        </div>
+
+        <!-- Product 4 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/device4.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Smart Hub Controller</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+        
+         <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+    </div>
+</div>
+
+
+<!--full slider 3: Continue shopping deals -->           
+
+  <div class="container-fluid py-4" style="background-color: #fff; margin-top: 20px;">
+    <div class="d-flex justify-content-between align-items-center mb-3 px-2">
+        <h4 class="fw-bold m-0" style="font-size: 20px;">More items to consider</h4>
+        <a href="#" class="text-decoration-none small" style="color: #007185;">See more</a>
+    </div>
+
+    <!-- Horizontal Scroll Container -->
+    <div class="d-flex overflow-auto pb-3 custom-scrollbar" style="gap: 20px; white-space: nowrap;">
+        
+        <!-- Product 1 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/router1.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">GL.iNet GL-MT3000 VPN Router</p>
+        </div>
+
+        <!-- Product 2 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/router2.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Dual Band Gigabit Wireless</p>
+        </div>
+
+        <!-- Product 3 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/device3.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Security Gateway Device</p>
+        </div>
+
+        <!-- Product 4 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/device4.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Smart Hub Controller</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+        
+         <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+    </div>
+</div>
+
+<!--full slider 4: Continue shopping deals -->           
+
+  <div class="container-fluid py-4" style="background-color: #fff; margin-top: 20px;">
+    <div class="d-flex justify-content-between align-items-center mb-3 px-2">
+        <h4 class="fw-bold m-0" style="font-size: 20px;">More items to consider</h4>
+        <a href="#" class="text-decoration-none small" style="color: #007185;">See more</a>
+    </div>
+
+    <!-- Horizontal Scroll Container -->
+    <div class="d-flex overflow-auto pb-3 custom-scrollbar" style="gap: 20px; white-space: nowrap;">
+        
+        <!-- Product 1 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/router1.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">GL.iNet GL-MT3000 VPN Router</p>
+        </div>
+
+        <!-- Product 2 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/router2.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Dual Band Gigabit Wireless</p>
+        </div>
+
+        <!-- Product 3 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/device3.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Security Gateway Device</p>
+        </div>
+
+        <!-- Product 4 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/device4.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Smart Hub Controller</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+        
+         <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+
+        <!-- Product 5 -->
+        <div class="product-item text-center" style="min-width: 200px; cursor: pointer;">
+            <div class="bg-light p-3 mb-2 d-flex align-items-center justify-content-center" style="height: 180px; border-radius: 4px;">
+                <img src="uploads/powerbank.jpg" class="img-fluid" style="max-height: 100%;">
+            </div>
+            <p class="small text-truncate px-2" style="max-width: 200px; color: #0F1111;">Portable Power Station</p>
+        </div>
+    </div>
+</div>
+
+        </div>
+    </div>
+</div>
+
+<!-- 1. Personalized Recommendations Section (Pill Shape) -->
+<div class="container-fluid bg-white border-top border-bottom py-2 mt-2">
+    <div class="text-center">
+        <h5 class="fw-bold mb-3" style="font-size: 18px; color: #0F1111;">See personalized recommendations</h5>
+        
+        <!-- Rounded Pill Button -->
+        <a href="login.php" class="btn btn-warning fw-bold mb-2" 
+           style="background-color: #ece912; 
+                  border: 1px solid #fbff14; 
+                  border-radius: 50px; 
+                  padding: 5px 100px; 
+                  font-size: 14px; 
+                  color: #0F1111;
+                  box-shadow: 0 2px 5px 0 rgba(213,217,217,.5);">
+            Sign in
+        </a>
+        
+        <p class="small mt-1" style="font-size: 11px; color: #0F1111;">
+            New customer? <a href="register.php" class="text-decoration-none" style="color: #007185;">Start here.</a>
+        </p>
+    </div>
+</div>
+
+
+<?php include('includes/footer.php'); ?>
